@@ -1,0 +1,6 @@
+/target
+
+# enviroment variables
+.env
+.env.local
+.env.*.local
