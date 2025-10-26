@@ -216,7 +216,7 @@ async fn view_all_cookies(conn: &libsql::Connection) -> Result<()> {
         println!(
             "   {} {}",
             "🕒".bright_black(),
-            cookie.created_at.format("%Y-%m-%d %H:%M").to_string().bright_black()
+            cookie.formatted_created_at().bright_black()
         );
     }
 
@@ -275,7 +275,7 @@ async fn view_cookies_by_bucket_flow(conn: &libsql::Connection) -> Result<()> {
         println!(
             "   {} {}",
             "🕒".bright_black(),
-            cookie.created_at.format("%Y-%m-%d %H:%M").to_string().bright_black()
+            cookie.formatted_created_at().bright_black()
         );
     }
 
@@ -308,7 +308,7 @@ async fn list_buckets(conn: &libsql::Connection) -> Result<()> {
         println!(
             "   {} Created {}",
             "🕒".bright_black(),
-            bucket.created_at.format("%Y-%m-%d").to_string().bright_black()
+            bucket.formatted_created_at().bright_black()
         );
     }
 

@@ -67,7 +67,11 @@ CREATE TABLE cookies (
 1. **Async throughout** - Uses Tokio runtime, all DB operations are async
 2. **Error propagation** - Uses `anyhow::Result` for error handling with context
 3. **No ORM** - Raw SQL queries via libsql
-4. **Timestamps** - Stored as i64 Unix timestamps, converted to `DateTime<Utc>` in models
+4. **Timestamps** - Stored as i64 Unix timestamps in database, converted to `DateTime<Utc>` in models
+   - Display formatting: Both `Bucket` and `Cookie` have `formatted_created_at()` methods
+   - Timestamps are converted to local timezone for display
+   - Cookie format: "Jan 15, 2025 at 03:45 PM" (includes time)
+   - Bucket format: "Jan 15, 2025" (date only)
 
 ### Important Implementation Details
 

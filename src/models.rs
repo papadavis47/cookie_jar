@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Local, Utc};
 
 /// Represents a bucket (category) for organizing cookies
 #[derive(Debug, Clone)]
@@ -26,6 +26,12 @@ impl Bucket {
             created_at: DateTime::from_timestamp(created_at, 0).unwrap_or_default(),
         }
     }
+
+    /// Format the creation timestamp in local time with a user-friendly format
+    pub fn formatted_created_at(&self) -> String {
+        let local_time = self.created_at.with_timezone(&Local);
+        local_time.format("%b %d, %Y").to_string()
+    }
 }
 
 impl Cookie {
@@ -36,5 +42,11 @@ impl Cookie {
             content,
             created_at: DateTime::from_timestamp(created_at, 0).unwrap_or_default(),
         }
+    }
+
+    /// Format the creation timestamp in local time with a user-friendly format
+    pub fn formatted_created_at(&self) -> String {
+        let local_time = self.created_at.with_timezone(&Local);
+        local_time.format("%b %d, %Y at %I:%M %p").to_string()
     }
 }
