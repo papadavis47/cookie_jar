@@ -1,9 +1,18 @@
 [package]
-name = "cookiejar"
+name = "cookie_jar"
 version = "0.1.0"
 edition = "2024"
+
+[[bin]]
+name = "cj"
+path = "src/main.rs"
 
 [dependencies]
 dotenvy = "0.15.7"
 libsql = "0.9.24"
 tokio = { version = "1.47.1", features = ["full"] }
+clap = { version = "4.5", features = ["derive"] }
+dialoguer = "0.11"
+colored = "2.1"
+chrono = "0.4"
+anyhow = "1.0"
