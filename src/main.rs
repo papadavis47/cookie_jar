@@ -5,6 +5,11 @@ mod models;
 
 use anyhow::Result;
 use colored::*;
+use crossterm::{
+    execute,
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, Clear, ClearType},
+};
+use std::io::stdout;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,25 +35,34 @@ async fn main() -> Result<()> {
     // Initial sync with Turso Cloud
     database.sync().await?;
 
+    // Enter alternate screen buffer (like vim)
+    execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All))?;
+
     // Main menu loop
-    loop {
-        match menu::show_main_menu(&conn, &database).await {
-            Ok(should_exit) => {
-                if should_exit {
-                    // Sync one final time before exiting
+    let result = async {
+        loop {
+            match menu::show_main_menu(&conn, &database).await {
+                Ok(should_exit) => {
+                    if should_exit {
+                        // Sync one final time before exiting
+                        database.sync().await?;
+                        println!("\n{} Goodbye!", "👋".bright_white());
+                        break;
+                    }
+                    // After each operation, sync with remote
                     database.sync().await?;
-                    println!("\n{} Goodbye!", "👋".bright_white());
-                    break;
                 }
-                // After each operation, sync with remote
-                database.sync().await?;
-            }
-            Err(e) => {
-                eprintln!("\n{} Error: {:?}", "✗".bright_red(), e);
-                // Continue running even if there's an error
+                Err(e) => {
+                    eprintln!("\n{} Error: {:?}", "✗".bright_red(), e);
+                    // Continue running even if there's an error
+                }
             }
         }
-    }
+        Ok::<(), anyhow::Error>(())
+    }.await;
 
-    Ok(())
+    // Always exit alternate screen buffer, even on error
+    execute!(stdout(), LeaveAlternateScreen)?;
+
+    result
 }

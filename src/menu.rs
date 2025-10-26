@@ -2,7 +2,9 @@ use crate::db;
 use crate::models::Bucket;
 use anyhow::Result;
 use colored::*;
+use crossterm::{execute, terminal::{Clear, ClearType}};
 use dialoguer::{theme::ColorfulTheme, Input, Select};
+use std::io::stdout;
 
 /// Main menu options
 #[derive(Debug)]
@@ -72,9 +74,18 @@ impl dialoguer::theme::Theme for VimTheme {
 
 /// Display the main menu and handle user selection
 pub async fn show_main_menu(conn: &libsql::Connection, db: &crate::db::Database) -> Result<bool> {
-    println!("\n{}", "🍪 cookiejar".bright_white().bold());
+    // Clear screen before showing menu
+    execute!(stdout(), Clear(ClearType::All))?;
+
+    println!("{}", "╔═══════════════════╗".bright_white().bold());
+    println!("{}", "║   C O O K I E     ║".bright_white().bold());
+    println!("{}", "║      J A R        ║".bright_white().bold());
+    println!("{}", "╚═══════════════════╝".bright_white().bold());
+    println!();
     println!("{}", "What would you like to do?".bright_white());
+    println!();
     println!("{}", "(use j/k or arrow keys to navigate)".bright_black());
+    println!();
 
     let options = vec![
         MainMenuOption::AddCookie,
@@ -99,6 +110,7 @@ pub async fn show_main_menu(conn: &libsql::Connection, db: &crate::db::Database)
 
     Ok(false) // Continue running
 }
+
 
 /// Flow for adding a new cookie
 async fn add_cookie_flow(conn: &libsql::Connection, db: &crate::db::Database) -> Result<()> {

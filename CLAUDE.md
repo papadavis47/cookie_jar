@@ -29,9 +29,9 @@ cj
 
 ### Core Components
 
-- **main.rs** - Application entry point. Initializes database, establishes connection, syncs with Turso, and runs the main menu loop.
+- **main.rs** - Application entry point. Initializes database, establishes connection, syncs with Turso, and runs the main menu loop. Uses crossterm's alternate screen buffer to preserve terminal state.
 - **db.rs** - Database layer with all CRUD operations for buckets and cookies. Handles libsql connection and sync.
-- **menu.rs** - TUI layer using dialoguer. Implements vim-style navigation (j/k keys) and all interactive flows.
+- **menu.rs** - TUI layer using dialoguer and crossterm. Implements vim-style navigation (j/k keys), screen clearing, and all interactive flows.
 - **models.rs** - Domain models: `Bucket` and `Cookie` with timestamp conversion logic.
 - **config.rs** - Path management for `~/.cookie_jar/` directory, database file, and .env file.
 
@@ -85,6 +85,11 @@ CREATE TABLE cookies (
 - Pastel colors assigned to buckets based on bucket ID modulo color array length
 - Cookie content validated at both application (dialoguer) and database (CHECK constraint) levels
 - `Cookie.id` field has `#[allow(dead_code)]` as it's retained for future edit/delete features but not currently used
+- **Terminal management:**
+  - Uses crossterm's alternate screen buffer (like vim/less)
+  - Terminal state is preserved when app starts and restored when app exits
+  - Screen is cleared before each main menu display for a clean UX
+  - ASCII art box-drawing characters used for the title
 
 ## Environment Setup
 
