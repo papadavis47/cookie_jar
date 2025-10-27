@@ -2,9 +2,9 @@ use crate::db;
 use crate::models::Bucket;
 use anyhow::Result;
 use colored::*;
-use crossterm::{execute, terminal::{Clear, ClearType}};
+use crossterm::{execute, terminal::{Clear, ClearType}, cursor::MoveTo};
 use dialoguer::{theme::ColorfulTheme, Input, Select};
-use std::io::stdout;
+use std::io::{stdout, stdin, Write};
 
 /// Main menu options
 #[derive(Debug)]
@@ -50,6 +50,15 @@ fn get_bucket_color(bucket_id: i64) -> Color {
     }
 }
 
+/// Wait for user to press Enter before continuing
+fn wait_for_enter() -> Result<()> {
+    print!("\n{}", "Press Enter to continue...".bright_white());
+    stdout().flush()?;
+    let mut buffer = String::new();
+    stdin().read_line(&mut buffer)?;
+    Ok(())
+}
+
 /// Custom theme with vim keybindings
 struct VimTheme;
 
@@ -74,8 +83,8 @@ impl dialoguer::theme::Theme for VimTheme {
 
 /// Display the main menu and handle user selection
 pub async fn show_main_menu(conn: &libsql::Connection, db: &crate::db::Database) -> Result<bool> {
-    // Clear screen before showing menu
-    execute!(stdout(), Clear(ClearType::All))?;
+    // Clear screen and move cursor to top before showing menu
+    execute!(stdout(), Clear(ClearType::All), MoveTo(0, 0))?;
 
     println!("{}", "╔═══════════════════╗".bright_white().bold());
     println!("{}", "║   C O O K I E     ║".bright_white().bold());
@@ -207,6 +216,7 @@ async fn view_all_cookies(conn: &libsql::Connection) -> Result<()> {
 
     if cookies.is_empty() {
         println!("\n{}", "No cookies yet! Add your first one.".bright_yellow());
+        wait_for_enter()?;
         return Ok(());
     }
 
@@ -235,6 +245,8 @@ async fn view_all_cookies(conn: &libsql::Connection) -> Result<()> {
     println!("\n{}", "─".repeat(60).bright_black());
     println!("Total: {} cookies", cookies.len().to_string().bright_cyan().bold());
 
+    wait_for_enter()?;
+
     Ok(())
 }
 
@@ -244,6 +256,7 @@ async fn view_cookies_by_bucket_flow(conn: &libsql::Connection) -> Result<()> {
 
     if buckets.is_empty() {
         println!("\n{}", "No buckets exist yet!".bright_yellow());
+        wait_for_enter()?;
         return Ok(());
     }
 
@@ -272,6 +285,7 @@ async fn view_cookies_by_bucket_flow(conn: &libsql::Connection) -> Result<()> {
             "ℹ".bright_yellow(),
             bucket.name.color(get_bucket_color(bucket.id)).bold()
         );
+        wait_for_enter()?;
         return Ok(());
     }
 
@@ -294,6 +308,8 @@ async fn view_cookies_by_bucket_flow(conn: &libsql::Connection) -> Result<()> {
     println!("\n{}", "─".repeat(60).bright_black());
     println!("Total: {} cookies", cookies.len().to_string().bright_cyan().bold());
 
+    wait_for_enter()?;
+
     Ok(())
 }
 
@@ -303,6 +319,7 @@ async fn list_buckets(conn: &libsql::Connection) -> Result<()> {
 
     if buckets.is_empty() {
         println!("\n{}", "No buckets exist yet!".bright_yellow());
+        wait_for_enter()?;
         return Ok(());
     }
 
@@ -326,6 +343,8 @@ async fn list_buckets(conn: &libsql::Connection) -> Result<()> {
 
     println!("\n{}", "─".repeat(60).bright_black());
     println!("Total: {} buckets", buckets.len().to_string().bright_cyan().bold());
+
+    wait_for_enter()?;
 
     Ok(())
 }

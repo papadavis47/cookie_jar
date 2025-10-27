@@ -8,6 +8,7 @@ use colored::*;
 use crossterm::{
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, Clear, ClearType},
+    cursor::MoveTo,
 };
 use std::io::stdout;
 
@@ -36,7 +37,7 @@ async fn main() -> Result<()> {
     database.sync().await?;
 
     // Enter alternate screen buffer (like vim)
-    execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All))?;
+    execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All), MoveTo(0, 0))?;
 
     // Main menu loop
     let result = async {

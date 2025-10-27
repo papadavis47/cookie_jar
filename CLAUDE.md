@@ -88,8 +88,11 @@ CREATE TABLE cookies (
 - **Terminal management:**
   - Uses crossterm's alternate screen buffer (like vim/less)
   - Terminal state is preserved when app starts and restored when app exits
-  - Screen is cleared before each main menu display for a clean UX
+  - Screen is cleared AND cursor is reset to (0, 0) before each main menu display for consistent positioning
   - ASCII art box-drawing characters used for the title
+  - "Press Enter to continue" prompts added after all display operations (view cookies, list buckets) to prevent content from flashing and disappearing
+  - Wait prompt uses `.bright_white()` for visibility on dark terminals
+  - Cursor positioning (`MoveTo(0, 0)`) ensures menu always appears at the top of the terminal
 
 ## Environment Setup
 
